@@ -207,6 +207,7 @@ export default function Home() {
             okText="Deletar"
             cancelText="Cancelar"
             icon={<ExclamationCircleOutlined style={{ color: '#f5222d' }} />}
+            okButtonProps={{ danger: true }}
           >
             <Button danger>
               <DeleteOutlined />
