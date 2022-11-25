@@ -9,11 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.8.0",
+    "@types/mysql": "^2.15.21",
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
+    "antd": "^5.0.1",
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.5",
+    "mysql2": "^2.3.3",
     "next": "13.0.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
