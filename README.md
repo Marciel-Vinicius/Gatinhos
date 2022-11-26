@@ -6,6 +6,7 @@
 
 ## Executar o projeto (desenvolvimento):
 ```
+npm install
 npm run dev
 ```
 
