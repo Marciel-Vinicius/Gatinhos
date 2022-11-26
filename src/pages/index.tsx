@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 import dayjs from 'dayjs';
@@ -22,7 +21,7 @@ import {
   ExclamationCircleOutlined,
   EditOutlined
 } from '@ant-design/icons';
-import { FormInstance } from 'rc-field-form';
+import type { FormInstance } from 'antd/es/form';
 
 const { Title } = Typography;
 
@@ -40,32 +39,44 @@ export default function Home() {
   const [formCadastrar] = Form.useForm();
   const [formEditar] = Form.useForm();
 
-
   const [isModalCadastrarOpen, setIsModalCadastrarOpen] = useState<boolean>(false);
   const [isModalEditarOpen, setIsModalEditarOpen] = useState<boolean>(false);
   const [loadingDadosCadastrar, setLoadingDadosCadastrar] = useState<boolean>(true);
-  const [confirmLoadingEditar, setConfirmLoadingEditar] = useState<boolean>(false);
   const [dadosBuscarGatos, setDadosBuscarGatos] = useState<any>();
-  const [dadosEditarGatos, setDadosEditarGatos] = useState<any>();
 
   const resetForm = (form: FormInstance) => {
     form.resetFields();
   };
 
   const buscarGatoPorId = async (id: string) => {
+
     try {
       const response = await fetch(`${apiUrl}/${id}`);
       const data = await response.json();
-  
-      await setDadosEditarGatos(data);
 
-      return "buscarGatoPorId: Sucesso!"
+      return data[0];
     } catch (error) {
       return error;
     }
-
   }
 
+  const setFieldsFormEditar = async (data: Data) => {
+    return new Promise((resolve, reject) => {
+      formEditar.setFieldsValue({
+        id: data.id,
+        nome: data.nome,
+        raca: data.raca,
+        peso: data.peso,
+        data_nascimento: dayjs(data.data_nascimento)
+      });
+
+      if (formEditar.getFieldsValue()) {
+        resolve(true);
+      } else {
+        reject(false);
+      }
+    });
+  }
 
   const buscarGatos = async () => {
     try {
@@ -78,7 +89,7 @@ export default function Home() {
     } catch (error) {
       return error;
     }
-    
+
   }
 
   useEffect(() => {
@@ -169,6 +180,15 @@ export default function Home() {
     }
   }
 
+  const handleEditarGato = (id: string) => {
+    buscarGatoPorId(id).then((data) => {
+      setFieldsFormEditar(data)
+      .then(() => {
+        setIsModalEditarOpen(true);
+      });
+    });
+  }
+
   const columns = [
     {
       title: 'Id',
@@ -215,17 +235,7 @@ export default function Home() {
           </Popconfirm>
 
           <Button
-            onClick={() => {
-              buscarGatoPorId(record.id)
-              .then((result) => {
-                console.log(`RESULT: ${result}`)
-                console.log(dadosEditarGatos);
-                setIsModalEditarOpen(true);
-                setConfirmLoadingEditar(true);
-              }).catch((error) => {
-                console.error(error);
-              });
-            }}
+            onClick={() => handleEditarGato(record.id)}
           >
             <EditOutlined />
           </Button>
@@ -244,7 +254,11 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <Title level={1}>CRUD</Title>
+        <Typography>
+          <Title level={1}>CRUD Gatos</Title>
+          <Title level={4}>Acadêmicos: Marciel V. de Lara e Patrick C. Paludo</Title>
+        </Typography>
+
         <Space direction='vertical' size={5}>
           <Skeleton loading={loadingDadosCadastrar} active>
             <Table columns={columns} dataSource={dadosBuscarGatos} />
@@ -292,29 +306,31 @@ export default function Home() {
           </Form>
         </Modal>
 
-        <Modal
-          title="Editar gato"
-          open={isModalEditarOpen}
-          onCancel={() => setIsModalEditarOpen(false)}
-          footer={[
-            <Button htmlType="button" onClick={() => resetForm(formEditar)}>
-              Corrigir
-            </Button>,
-            <Button key="fechar" danger onClick={() => setIsModalEditarOpen(false)}>
-              Cancelar
-            </Button>,
-            <Button type="primary" htmlType="submit" onClick={editarGato}>
-              Enviar
-            </Button>
-          ]}
-
+        <Form
+          form={formEditar}
+          name="control-hooks-editar"
         >
-          <Form form={formEditar} name="control-hooks-editar">
+          <Modal
+            title="Editar gato"
+            open={isModalEditarOpen}
+            onCancel={() => setIsModalEditarOpen(false)}
+            footer={[
+              <Button htmlType="button" onClick={() => resetForm(formEditar)}>
+                Corrigir
+              </Button>,
+              <Button key="fechar" danger onClick={() => setIsModalEditarOpen(false)}>
+                Cancelar
+              </Button>,
+              <Button type="primary" htmlType="submit" onClick={editarGato}>
+                Enviar
+              </Button>
+            ]}
+
+          >
             <Space direction='vertical'>
               <Form.Item
                 name="id"
                 label="Id"
-                initialValue={dadosEditarGatos?.id}
               >
                 <Input disabled />
               </Form.Item>
@@ -322,7 +338,6 @@ export default function Home() {
               <Form.Item
                 name="nome"
                 label="Nome"
-                initialValue={dadosEditarGatos?.nome}
               >
                 <Input />
               </Form.Item>
@@ -330,7 +345,6 @@ export default function Home() {
               <Form.Item
                 name="raca"
                 label="Raça"
-                initialValue={dadosEditarGatos?.raca}
               >
                 <Input />
               </Form.Item>
@@ -338,7 +352,6 @@ export default function Home() {
               <Form.Item
                 name="peso"
                 label="Peso"
-                initialValue={dadosEditarGatos?.peso}
               >
                 <Input />
               </Form.Item>
@@ -346,30 +359,18 @@ export default function Home() {
               <Form.Item
                 name="data_nascimento"
                 label="Data de nascimento"
-                initialValue={dayjs(dadosEditarGatos ? new Date(dadosEditarGatos.data_nascimento) : new Date())}
               >
                 <DatePicker />
               </Form.Item>
             </Space>
-          </Form>
-        </Modal>
-
-
-
-
+          </Modal>
+        </Form>
       </main>
 
       <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
+        <p>
+          Desenvolvido por: Marciel V. de Lara e Patrick C. Paludo
+        </p>
       </footer>
     </div>
   )
