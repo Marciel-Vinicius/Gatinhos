@@ -1,5 +1,5 @@
 # CRUD Gatos
-
+Node: v18.12.1
 ## Banco de dados:
 - Utilizar MySQL 8.0.31
 - Executar o script 'banco.sql' para criar o banco;
@@ -8,6 +8,13 @@
 ```
 npm install
 npm run dev
+```
+
+## Executar o projeto (produção):
+```
+npm install
+npm run build
+npm run start
 ```
 
 ## API:

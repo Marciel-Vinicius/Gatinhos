@@ -48,18 +48,6 @@ export default function Home() {
     form.resetFields();
   };
 
-  const buscarGatoPorId = async (id: string) => {
-
-    try {
-      const response = await fetch(`${apiUrl}/${id}`);
-      const data = await response.json();
-
-      return data[0];
-    } catch (error) {
-      return error;
-    }
-  }
-
   const setFieldsFormEditar = async (data: Data) => {
     return new Promise((resolve, reject) => {
       formEditar.setFieldsValue({
@@ -78,6 +66,17 @@ export default function Home() {
     });
   }
 
+  const buscarGatoPorId = async (id: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/${id}`);
+      const data = await response.json();
+
+      return data[0];
+    } catch (error) {
+      return error;
+    }
+  }
+
   const buscarGatos = async () => {
     try {
       const response = await fetch(apiUrl);
@@ -91,12 +90,6 @@ export default function Home() {
     }
 
   }
-
-  useEffect(() => {
-    buscarGatos().then(() => {
-      setLoadingDadosCadastrar(false);
-    });
-  }, [])
 
   const cadastrarGatos = async () => {
     const nome = formCadastrar.getFieldValue('nome');
@@ -125,27 +118,6 @@ export default function Home() {
     } else {
       message.error('Erro ao cadastrar gato!');
     }
-  }
-
-
-  const deletarGatos = async (id: number) => {
-    const response = await fetch(apiUrl, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: id
-      })
-    });
-
-    if (response.status === 200) {
-      message.success('Gato deletado com sucesso!');
-      buscarGatos();
-    } else {
-      message.error('Erro ao deletar gato :(');
-    }
-
   }
 
   const editarGato = async () => {
@@ -180,14 +152,39 @@ export default function Home() {
     }
   }
 
+  const deletarGatos = async (id: number) => {
+    const response = await fetch(apiUrl, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id
+      })
+    });
+
+    if (response.status === 200) {
+      message.success('Gato deletado com sucesso!');
+      buscarGatos();
+    } else {
+      message.error('Erro ao deletar gato :(');
+    }
+  }
+
   const handleEditarGato = (id: string) => {
     buscarGatoPorId(id).then((data) => {
       setFieldsFormEditar(data)
-      .then(() => {
-        setIsModalEditarOpen(true);
-      });
+        .then(() => {
+          setIsModalEditarOpen(true);
+        });
     });
   }
+
+  useEffect(() => {
+    buscarGatos().then(() => {
+      setLoadingDadosCadastrar(false);
+    });
+  }, []);
 
   const columns = [
     {
@@ -249,7 +246,7 @@ export default function Home() {
     <div className={styles.container}>
       <Head>
         <title>CRUD Gatos</title>
-        <meta name="description" content="Crud Gatos" />
+        <meta lang='pt-br' name="description" content="Crud Gatos" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -273,13 +270,13 @@ export default function Home() {
           open={isModalCadastrarOpen}
           onCancel={() => setIsModalCadastrarOpen(false)}
           footer={[
-            <Button htmlType="button" onClick={() => resetForm(formCadastrar)}>
+            <Button htmlType="button" key="cadastrar-corrigir" onClick={() => resetForm(formCadastrar)}>
               Corrigir
             </Button>,
-            <Button key="fechar" danger onClick={() => setIsModalCadastrarOpen(false)}>
+            <Button key="cadastrar-fechar" danger onClick={() => setIsModalCadastrarOpen(false)}>
               Cancelar
             </Button>,
-            <Button type="primary" htmlType="submit" onClick={cadastrarGatos}>
+            <Button type="primary" key="cadastrar-enviar" htmlType="submit" onClick={cadastrarGatos}>
               Enviar
             </Button>
           ]}
@@ -314,13 +311,13 @@ export default function Home() {
             open={isModalEditarOpen}
             onCancel={() => setIsModalEditarOpen(false)}
             footer={[
-              <Button htmlType="button" onClick={() => resetForm(formEditar)}>
+              <Button htmlType="button" key="editar-corrigir" onClick={() => resetForm(formEditar)}>
                 Corrigir
               </Button>,
-              <Button key="fechar" danger onClick={() => setIsModalEditarOpen(false)}>
+              <Button key="editar-fechar" danger onClick={() => setIsModalEditarOpen(false)}>
                 Cancelar
               </Button>,
-              <Button type="primary" htmlType="submit" onClick={editarGato}>
+              <Button type="primary" key="editar-enviar" htmlType="submit" onClick={editarGato}>
                 Enviar
               </Button>
             ]}
