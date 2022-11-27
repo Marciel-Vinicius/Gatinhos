@@ -256,7 +256,6 @@ export default function Home() {
       <main className={styles.main}>
         <Typography>
           <Title level={1}>CRUD Gatos</Title>
-          <Title level={4}>Acadêmicos: Marciel V. de Lara e Patrick C. Paludo</Title>
         </Typography>
 
         <Space direction='vertical' size={5}>
