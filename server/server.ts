@@ -32,7 +32,7 @@ if (isDev) {
 
 // Buscar todos os gatos
 app.get("/api/gatos", (req, res) => {
-  let query = "SELECT * FROM gato";
+  let query = "SELECT id, nome, raca, peso, SUBSTRING(data_nascimento, 1, 10) AS data_nascimento FROM gato";
   db.query(query, (err: Error, result: Data) => {
     if (err) {
       console.error(err);
@@ -77,7 +77,7 @@ app.put("/api/gatos", (req, res) => {
   const { id, nome, raca, peso, data_nascimento } = req.body;
 
   let query = "UPDATE gato SET nome = ?, raca = ?, peso = ?, data_nascimento = ? WHERE id = ?";
-  db.query(query, [id, nome, raca, peso, data_nascimento], (err, result) => {
+  db.query(query, [nome, raca, peso, data_nascimento, id], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json(err);

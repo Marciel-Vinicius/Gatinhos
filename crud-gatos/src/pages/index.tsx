@@ -34,7 +34,7 @@ type Data = {
 }
 
 export default function Home() {
-  const apiUrl = 'http://localhost:3000/api/gatos';
+  const apiUrl = 'http://localhost:3001/api/gatos';
 
   const [formCadastrar] = Form.useForm();
   const [formEditar] = Form.useForm();
@@ -153,14 +153,11 @@ export default function Home() {
   }
 
   const deletarGatos = async (id: number) => {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${apiUrl}/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: id
-      })
+      }
     });
 
     if (response.status === 200) {
