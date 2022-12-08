@@ -248,9 +248,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <Typography>
-          <Title level={1}>CRUD Gatos</Title>
-        </Typography>
+        <h1>CRUD Gatos</h1>
 
         <Space direction='vertical' size={5}>
           <Skeleton loading={loadingDadosCadastrar} active>
